@@ -32,7 +32,9 @@ public class ClientSubscriber<T extends Serializable> {
 
     public void kill() {
         try {
-            socket.close();
+            if (socket != null) {
+                socket.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
