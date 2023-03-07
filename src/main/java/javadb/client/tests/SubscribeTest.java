@@ -1,10 +1,7 @@
 package javadb.client.tests;
 
 import javadb.client.ClientSubscriber;
-import javadb.client.ClientTask;
 import tables.User;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class SubscribeTest {
     public static void main(String[] args) throws InterruptedException {
