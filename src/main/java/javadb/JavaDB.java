@@ -74,7 +74,12 @@ public class JavaDB {
                 continue;
             }
             synchronized (tables) {
-                task.accept(tables);
+                try {
+                    task.accept(tables);
+                } catch (Exception e) {
+                    submitLog(Log.LogLevel.ERROR, "Failed to execute task: " + e.getMessage());
+                }
+
                 synchronized (subscribers) {
                     LinkedList<Subscriber> failed = new LinkedList<>();
 
