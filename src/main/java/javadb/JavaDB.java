@@ -125,7 +125,7 @@ public class JavaDB {
             submitLog(Log.LogLevel.ERROR, e.getMessage());
             return;
         }
-        submitLog(Log.LogLevel.INFO,"successfully write table updates to disk");
+        submitLog(Log.LogLevel.INFO,"successfully wrote table updates to disk");
     }
     public void submitLog(Log.LogLevel logLevel, String message) {
         Log log = new Log(logLevel, message);
