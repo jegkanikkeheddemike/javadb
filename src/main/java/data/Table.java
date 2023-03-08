@@ -5,7 +5,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class Table<T extends Serializable> implements Iterable<T>,Serializable {
+public class Table<T extends TableData<?>> implements Iterable<T>,Serializable {
     int generation = 0;
     Stack<Integer> freeIndexes = new Stack<>();
     ArrayList<T> content = new ArrayList<>();

@@ -1,6 +1,6 @@
 package tables;
 
-import java.io.Serializable;
+import data.TableData;
 
-public class Project implements Serializable {
+public class Project extends TableData<Project> {
 }

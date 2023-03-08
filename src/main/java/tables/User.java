@@ -1,6 +1,18 @@
 package tables;
 
-import java.io.Serializable;
+import data.TableData;
+import data.TableID;
 
-public record User(String username, String realName) implements Serializable {
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Objects;
+
+public final class User extends TableData<User> {
+    public String username;
+    public String realName;
+
+    public User(String username, String realName) {
+        this.username = username;
+        this.realName = realName;
+    }
 }

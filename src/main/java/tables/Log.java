@@ -1,9 +1,11 @@
 package tables;
 
+import data.TableData;
+
 import java.io.Serializable;
 import java.util.Date;
 
-public class Log implements Serializable {
+public class Log extends TableData<Log> {
     final LogLevel logLevel;
     final Date date;
     final String message;
