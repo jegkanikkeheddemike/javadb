@@ -26,13 +26,13 @@ public class DBServer {
         JavaDB loadedDB;
         try {
             loadedDB = new JavaDB(filepath);
-            loadedDB.submitLog(Log.LogLevel.INFO,"Loaded database from file");
+            loadedDB.pubSubmitLog(Log.LogLevel.INFO,"Loaded database from file");
         } catch (Exception e) {
             loadedDB = new JavaDB();
             if (e instanceof ClassNotFoundException || e instanceof InvalidClassException) {
-                loadedDB.submitLog(Log.LogLevel.FATAL,"Loaded database is incompatible with the new one. Wiping all data and creating new.");
+                loadedDB.pubSubmitLog(Log.LogLevel.FATAL,"Loaded database is incompatible with the new one. Wiping all data and creating new.");
             } else if (e instanceof IOException) {
-                loadedDB.submitLog(Log.LogLevel.INFO,"Existing database does not exist. Creating new");
+                loadedDB.pubSubmitLog(Log.LogLevel.INFO,"Existing database does not exist. Creating new");
             }
         }
         database = loadedDB;
@@ -70,7 +70,7 @@ public class DBServer {
                     database.submitSubscriber(subscriber);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                database.pubSubmitLog(Log.LogLevel.ERROR,e.toString());
             }
         }
 

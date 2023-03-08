@@ -47,7 +47,7 @@ public class JavaDB {
                     subscribers.add(subscriber);
                 }
             } catch (ClassCastException e) {
-                submitLog(Log.LogLevel.FATAL, "Loaded tables are incompatible with current schema. " + e.getMessage());
+                submitLog(Log.LogLevel.FATAL, "Failed to execute filter. Likely incompatible table versions. "+ e.getMessage());
             }
         }
     }
@@ -122,12 +122,18 @@ public class JavaDB {
 
             Files.write(Path.of( getTablesSavePath()), tablesBin);
         } catch (IOException e) {
-            submitLog(Log.LogLevel.ERROR, e.getMessage());
+            submitLog(Log.LogLevel.ERROR, e.toString());
             return;
         }
         submitLog(Log.LogLevel.INFO,"successfully wrote table updates to disk");
     }
-    public void submitLog(Log.LogLevel logLevel, String message) {
+    public void pubSubmitLog(Log.LogLevel logLevel, String message) {
+        synchronized (tables) {
+            submitLog(logLevel,message);
+        }
+    }
+
+    private void submitLog(Log.LogLevel logLevel, String message) {
         Log log = new Log(logLevel, message);
         tables.logs.insert(log);
         System.out.println(log);

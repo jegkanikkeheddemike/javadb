@@ -1,4 +1,6 @@
 package data;
 
-public record TableID<T>(int index, int generation) {
+import java.io.Serializable;
+
+public record TableID<T>(int index, int generation) implements Serializable {
 }

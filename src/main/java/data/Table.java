@@ -1,11 +1,14 @@
 package data;
 
+import javax.sound.midi.Receiver;
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class Table<T extends TableData<?>> implements Iterable<T>,Serializable {
+public class Table<T extends TableData<T>> implements Iterable<T>,Serializable {
     int generation = 0;
     Stack<Integer> freeIndexes = new Stack<>();
     ArrayList<T> content = new ArrayList<>();
@@ -13,6 +16,7 @@ public class Table<T extends TableData<?>> implements Iterable<T>,Serializable {
     public TableID<T> insert(T value) {
         if (freeIndexes.empty()) {
             TableID<T> id = new TableID<T>(content.size(), generation);
+            value.id = id;
             content.add(value);
             return id;
         }
@@ -20,8 +24,26 @@ public class Table<T extends TableData<?>> implements Iterable<T>,Serializable {
         int index = freeIndexes.pop();
         generation += 1;
         TableID<T> id = new TableID<>(index, generation);
+        value.id = id;
         content.set(index, value);
         return id;
+    }
+
+    public T get(TableID<T> id) {
+        return content.get(id.index());
+    }
+
+    public <R extends TableData<R>> Stream<Join<R, T>> joinOnId(Stream<R> stream, Function<R,TableID<T>> idGetter) {
+        return stream.map(received -> new Join<>(received,get(idGetter.apply(received))));
+    }
+
+    public <R extends TableData<R>> Stream<Join<R, T[]>> joinWhere(Stream<R> stream, BiFunction<R,T,Boolean> filter, T[] dummy) {
+        return stream.map(received -> {
+            return new Join<>(
+                    received,
+                    stream().filter(item-> filter.apply(received,item)).toList().toArray(dummy)
+                );
+        });
     }
 
     public Stream<T> stream() {
