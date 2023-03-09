@@ -15,7 +15,7 @@ public class Table<T extends TableData<T>> implements Iterable<T>,Serializable {
 
     public TableID<T> insert(T value) {
         if (freeIndexes.empty()) {
-            TableID<T> id = new TableID<T>(content.size(), generation);
+            TableID<T> id = new TableID<T>(content.size(), generation, value.getClass().getSimpleName());
             value.id = id;
             content.add(value);
             return id;
@@ -23,7 +23,7 @@ public class Table<T extends TableData<T>> implements Iterable<T>,Serializable {
 
         int index = freeIndexes.pop();
         generation += 1;
-        TableID<T> id = new TableID<>(index, generation);
+        TableID<T> id = new TableID<T>(index, generation, value.getClass().getSimpleName());
         value.id = id;
         content.set(index, value);
         return id;
@@ -31,11 +31,11 @@ public class Table<T extends TableData<T>> implements Iterable<T>,Serializable {
 
 
     public T get(TableID<T> id) {
-        T found = content.get(id.index());
+        T found = content.get(id.index);
         if (found == null) {
             return null;
         }
-        if (found.Id().generation() == id.generation()) {
+        if (found.Id().generation == id.generation) {
             return found;
         }
         return null;
