@@ -18,6 +18,6 @@ public final class TableID<T> implements Serializable {
 
     @Override
     public String toString() {
-        return tableName + ": " + generation;
+        return tableName + " " + generation;
     }
 }
