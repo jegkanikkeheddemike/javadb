@@ -47,7 +47,7 @@ public class JavaDB {
                     subscribers.add(subscriber);
                 }
             } catch (ClassCastException e) {
-                submitLog(Log.LogLevel.ERROR, "Failed to execute filter. Likely incompatible table versions. "+ e.toString());
+                submitLog(Log.LogLevel.ERROR, "Failed to execute filter. Likely incompatible table versions. "+ e.toString(), true);
             }
         }
     }
@@ -61,9 +61,6 @@ public class JavaDB {
         }
         running = true;
         new Thread(this::run).start();
-
-        //Log git version
-        logGitVersion();
     }
 
     private void run() {
@@ -79,7 +76,7 @@ public class JavaDB {
                 try {
                     task.accept(tables);
                 } catch (Exception e) {
-                    submitLog(Log.LogLevel.ERROR, "Failed to execute task: " + e);
+                    submitLog(Log.LogLevel.ERROR, "Failed to execute task: " + e, true);
                 }
 
                 synchronized (subscribers) {
@@ -93,7 +90,7 @@ public class JavaDB {
                             }
                         } catch (Exception e) {
                             failed.add(subscriber);
-                            submitLog(Log.LogLevel.ERROR, "Failed to execute filter on nonfirst attempt: " + e);
+                            submitLog(Log.LogLevel.ERROR, "Failed to execute filter on nonfirst attempt: " + e, true);
                         }
 
                     }
@@ -120,7 +117,7 @@ public class JavaDB {
         try {
             Files.createDirectories(Path.of(filepath));
         } catch (IOException e) {
-            submitLog(Log.LogLevel.ERROR,"Failed to create javaDB directory. " + e);
+            submitLog(Log.LogLevel.ERROR,"Failed to create javaDB directory. " + e, false);
             return;
         }
         try {
@@ -131,38 +128,24 @@ public class JavaDB {
 
             Files.write(Path.of( getTablesSavePath()), tablesBin);
         } catch (IOException e) {
-            submitLog(Log.LogLevel.ERROR, e.toString());
+            submitLog(Log.LogLevel.ERROR, e.toString(), false);
             return;
         }
-        submitLog(Log.LogLevel.INFO,"successfully wrote table updates to disk");
+        submitLog(Log.LogLevel.INFO,"successfully wrote table updates to disk", false);
     }
     public void pubSubmitLog(Log.LogLevel logLevel, String message) {
-        submitTask(tables1 -> submitLog(logLevel,message));
-
-
+        submitTask(tables1 -> submitLog(logLevel,message,true));
     }
 
-    private void submitLog(Log.LogLevel logLevel, String message) {
+    private void submitLog(Log.LogLevel logLevel, String message, boolean forceUpdate) {
         Log log = new Log(logLevel, message);
         tables.logs.insert(log);
         System.out.println(log);
-    }
-
-    void logGitVersion() {
-
-        try {
-            String[] cmd = {"git"," rev-parse","--short", "HEAD"};
-
-            Runtime rt = Runtime.getRuntime();
-
-            Process proc = rt.exec(cmd);
-            BufferedReader stdInput = new BufferedReader(new
-                    InputStreamReader(proc.getInputStream()));
-            String version = stdInput.readLine();
-            pubSubmitLog(Log.LogLevel.INFO, "Running git commit: " + version);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (forceUpdate) {
+            //If tasks is not empty, then just do it.
+            if (tasks.isEmpty()) {
+                saveToDisk();
+            }
         }
 
     }
