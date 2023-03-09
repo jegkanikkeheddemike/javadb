@@ -15,4 +15,9 @@ public final class TableID<T> implements Serializable {
         this.generation = generation;
         this.tableName = tableName;
     }
+
+    @Override
+    public String toString() {
+        return tableName + ": " + generation;
+    }
 }

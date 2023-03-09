@@ -14,15 +14,14 @@ public class Table<T extends TableData<T>> implements Iterable<T>,Serializable {
     ArrayList<T> content = new ArrayList<>();
 
     public TableID<T> insert(T value) {
+        generation += 1;
         if (freeIndexes.empty()) {
             TableID<T> id = new TableID<T>(content.size(), generation, value.getClass().getSimpleName());
             value.id = id;
             content.add(value);
             return id;
         }
-
         int index = freeIndexes.pop();
-        generation += 1;
         TableID<T> id = new TableID<T>(index, generation, value.getClass().getSimpleName());
         value.id = id;
         content.set(index, value);
