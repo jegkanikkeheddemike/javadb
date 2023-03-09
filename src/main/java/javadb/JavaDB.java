@@ -137,9 +137,9 @@ public class JavaDB {
         submitLog(Log.LogLevel.INFO,"successfully wrote table updates to disk");
     }
     public void pubSubmitLog(Log.LogLevel logLevel, String message) {
-        synchronized (tables) {
-            submitLog(logLevel,message);
-        }
+        submitTask(tables1 -> submitLog(logLevel,message));
+
+
     }
 
     private void submitLog(Log.LogLevel logLevel, String message) {
