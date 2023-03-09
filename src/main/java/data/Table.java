@@ -29,8 +29,17 @@ public class Table<T extends TableData<T>> implements Iterable<T>,Serializable {
         return id;
     }
 
+
     public T get(TableID<T> id) {
-        return content.get(id.index());
+        T found = content.get(id.index());
+        if (found == null) {
+            return null;
+        }
+        if (found.Id().generation() == id.generation()) {
+            return found;
+        }
+        return null;
+
     }
 
     public <R extends TableData<R>> Stream<Join<R, T>> joinOnId(Stream<R> stream, Function<R,TableID<T>> idGetter) {
