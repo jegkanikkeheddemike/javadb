@@ -13,8 +13,8 @@ public class LogTest {
             }
         }, Throwable::printStackTrace);
 
-        Thread.sleep(1000);
+        //Thread.sleep(1000);
 
-        logSubscriber.kill();
+        //logSubscriber.kill();
     }
 }
