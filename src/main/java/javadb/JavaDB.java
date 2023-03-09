@@ -47,7 +47,7 @@ public class JavaDB {
                     subscribers.add(subscriber);
                 }
             } catch (ClassCastException e) {
-                submitLog(Log.LogLevel.FATAL, "Failed to execute filter. Likely incompatible table versions. "+ e.getMessage());
+                submitLog(Log.LogLevel.ERROR, "Failed to execute filter. Likely incompatible table versions. "+ e.toString());
             }
         }
     }
@@ -76,17 +76,23 @@ public class JavaDB {
                 try {
                     task.accept(tables);
                 } catch (Exception e) {
-                    submitLog(Log.LogLevel.ERROR, "Failed to execute task: " + e.getMessage());
+                    submitLog(Log.LogLevel.ERROR, "Failed to execute task: " + e);
                 }
 
                 synchronized (subscribers) {
                     LinkedList<Subscriber> failed = new LinkedList<>();
 
                     for (Subscriber subscriber : subscribers) {
-                        boolean success = subscriber.update(tables);
-                        if (!success) {
+                        try {
+                            boolean success = subscriber.update(tables);
+                            if (!success) {
+                                failed.add(subscriber);
+                            }
+                        } catch (Exception e) {
                             failed.add(subscriber);
+                            submitLog(Log.LogLevel.ERROR, "Failed to execute filter on nonfirst attempt: " + e);
                         }
+
                     }
                     for (Subscriber failedSub : failed) {
                         subscribers.remove(failedSub);
@@ -111,7 +117,7 @@ public class JavaDB {
         try {
             Files.createDirectories(Path.of(filepath));
         } catch (IOException e) {
-            submitLog(Log.LogLevel.ERROR,"Failed to create javaDB directory. " + e.getMessage());
+            submitLog(Log.LogLevel.ERROR,"Failed to create javaDB directory. " + e);
             return;
         }
         try {
