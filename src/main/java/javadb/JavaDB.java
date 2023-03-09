@@ -61,6 +61,9 @@ public class JavaDB {
         }
         running = true;
         new Thread(this::run).start();
+
+        //Log git version
+        logGitVersion();
     }
 
     private void run() {
@@ -143,5 +146,24 @@ public class JavaDB {
         Log log = new Log(logLevel, message);
         tables.logs.insert(log);
         System.out.println(log);
+    }
+
+    void logGitVersion() {
+
+        try {
+            String[] cmd = {"git"," rev-parse","--short", "HEAD"};
+
+            Runtime rt = Runtime.getRuntime();
+
+            Process proc = rt.exec(cmd);
+            BufferedReader stdInput = new BufferedReader(new
+                    InputStreamReader(proc.getInputStream()));
+            String version = stdInput.readLine();
+            pubSubmitLog(Log.LogLevel.INFO, version);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
