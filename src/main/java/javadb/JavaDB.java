@@ -159,7 +159,7 @@ public class JavaDB {
             BufferedReader stdInput = new BufferedReader(new
                     InputStreamReader(proc.getInputStream()));
             String version = stdInput.readLine();
-            pubSubmitLog(Log.LogLevel.INFO, version);
+            pubSubmitLog(Log.LogLevel.INFO, "Running git commit: " + version);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
