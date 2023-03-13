@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class JoinTest {
     public static void main(String[] args) throws InterruptedException {
-        ClientTask.SubmitTask("localhost", tables -> {
+        ClientTask.SubmitTask("koebstoffer.info", tables -> {
             var uid1 = tables.users.insert(new User("Obama1", "Barack1"));
             var uid2 = tables.users.insert(new User("Obama2", "Barack2"));
             tables.users.insert(new User("Obama3", "Barack3"));
@@ -21,7 +21,7 @@ public class JoinTest {
             tables.tasks.insert(new Task(uid2));
         }, Throwable::printStackTrace);
 
-        ClientSubscriber<Join<Task, User>[]> subscriber = new ClientSubscriber<Join<Task, User>[]>("localhost",
+        ClientSubscriber<Join<Task, User>[]> subscriber = new ClientSubscriber<Join<Task, User>[]>("koebstoffer.info",
                 tables -> {
                     var stream = tables.users.joinOnId(
                             tables.tasks.stream(),
@@ -38,7 +38,7 @@ public class JoinTest {
         Thread.sleep(1000);
         subscriber.kill();
 
-        ClientSubscriber<Join<User, Task[]>[]> subscriber2 = new ClientSubscriber<Join<User, Task[]>[]>("localhost",
+        ClientSubscriber<Join<User, Task[]>[]> subscriber2 = new ClientSubscriber<Join<User, Task[]>[]>("koebstoffer.info",
                 tables -> {
                     var stream = tables.tasks.joinWhere(
                             tables.users.stream(),
