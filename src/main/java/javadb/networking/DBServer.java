@@ -73,11 +73,17 @@ public class DBServer {
                 database.pubSubmitLog(Log.LogLevel.ERROR,e.toString());
             }
         }
-
+        database.pubSubmitLog(Log.LogLevel.FATAL, "Server has crashed. Exiting");
         try {
             socket.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.exit(1);
     }
 }
